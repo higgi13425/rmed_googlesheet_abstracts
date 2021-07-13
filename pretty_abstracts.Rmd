@@ -1,0 +1,61 @@
+---
+title: "rmed_googlesheet_abstracts"
+author: "Peter Higgins"
+date: "7/13/2021"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(glue)
+library(googlesheets4)
+```
+
+## Read in the abstracts
+
+This assumes that you have tidyverse, glue, and googlesheets4 installed.
+You will have to authorize access to your google drive account for the first use.
+
+```{r read}
+abstracts <- read_sheet("https://docs.google.com/spreadsheets/d/1CJcH7vCw2nUcrQ_79LNfTPsE0rN-p-_afyO9hMOTutE/edit") %>% 
+  slice(1:64)
+```
+
+## Printing info
+
+We will use glue_data from the glue package
+
+```{r print, echo=FALSE}
+abstracts %>% 
+  glue_data(
+    "name: {name} 
+    org: {organization}
+    title: {job_title} 
+    time zone: {timezone}
+    bio: {bio}
+    gender: {gender}
+    poc: {poc}
+    submission_type: {submission_type}
+    abstract_title: {abstract_title}
+    abstract: {abstract}
+    \n
+    Your Score (1-9): 
+    \n"
+  )
+```
+
+End of abstracts.
+
+Table of time zones
+
+```{r}
+abstracts %>% 
+  janitor::tabyl(timezone) %>% 
+  janitor::adorn_pct_formatting() %>% 
+  flextable::flextable() %>% 
+  flextable::autofit()
+```
+
